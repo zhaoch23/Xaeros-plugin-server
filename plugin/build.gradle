@@ -41,11 +41,6 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
-tasks.register('copyJar', Copy) {
-    from buildDir.toString() + "/libs/" + project.name + "-" + project.version + ".jar"
-    into "E:/Minecraft/servers/spigot_1_12_2_nogerm/plugins" // Change to your server's plugin folder
-}
-
 build {
     finalizedBy 'copyJar'
 }
