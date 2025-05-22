@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "minVersion": "0.7",
+  "package": "com.zhaoch23.xaerospatch.mixins",
+  "compatibilityLevel": "JAVA_8",
+  "client": [],
+  "mixins": [
+    "ClientboundRulesPacketMixin",
+    "MinimapMessageRegisterMixin",
+    "MinimapWorldStateUpdaterMixin"
+  ]
+}

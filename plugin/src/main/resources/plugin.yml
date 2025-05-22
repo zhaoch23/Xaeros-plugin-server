@@ -1,0 +1,16 @@
+name: XaerosMinimapServer
+version: '${version}'
+main: com.zhaoch23.xaerosminimapserver.XaerosMinimapServer
+
+commands:
+  xwaypoint:
+    description: "Manage waypoints"
+    usage: "/xwaypoint <set|remove|list|reload|save> [name] [color]"
+    aliases: [xwp]
+    permission: xaerosminimapserver.waypoint
+
+permissions:
+  xaerosminimapserver.*:
+    description: "All permissions for XaerosMinimapServer"
+    children:
+      xaerosminimapserver.waypoint: true

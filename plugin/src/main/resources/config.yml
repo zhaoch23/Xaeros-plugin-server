@@ -1,0 +1,13 @@
+rules:
+  allowCaveModeOnServer: true
+  allowNetherCaveModeOnServer: true
+  allowEndCaveModeOnServer: true
+
+waypoints:
+  world:
+    Test:
+      x: 0
+      y: 100
+      z: 0
+      color: RED
+      initials: "TE"
