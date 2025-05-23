@@ -14,6 +14,20 @@
 
 Note: Make sure both the client and server are running Minecraft version 1.12.2
 
+## Features
+
+- **Server-to-Client Waypoint Synchronization**
+  - Automatically sends waypoints from the server to connected clients
+  - Ensures all players have access to the same waypoints
+  - Real-time updates when waypoints are modified
+
+- **Waypoint Protection**
+  - Prevents clients from modifying server-side waypoints
+  - Maintains waypoint integrity across all players
+
+- **Transparent Waypoint Background**
+  - Support for transparent background waypoints
+
 ## Commands
 
 The plugin provides several commands for managing waypoints. All commands require the permission `xaerosminimapserver.waypoint`.
