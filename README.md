@@ -20,24 +20,24 @@ The plugin provides several commands for managing waypoints. All commands requir
 
 ### Waypoint Commands
 
-- `/waypoint set <x> <y> <z> <name> <color> [initials] [update]`
+- `/xwp set <x> <y> <z> <name> <color> [initials] [update]`
   - Sets a new waypoint at the specified coordinates
   - Colors: red, green, blue, yellow, purple, orange, white, black
   - Coordinates can be relative using `~` (e.g., `~` for current position, `~5` for 5 blocks forward)
   - Optional initials for the waypoint
-  - Optional update parameter (true/false) to update existing waypoints
+  - Optional update parameter (true/false) to send to players
 
-- `/waypoint remove <name>`
+- `/xwp remove <name>`
   - Removes a waypoint with the specified name
 
-- `/waypoint list`
+- `/xwp list`
   - Lists all available waypoints
 
-- `/waypoint update <name> <x> <y> <z> [color] [initials]`
-  - Updates an existing waypoint's position and properties
+- `/xwp update`
+  - Sends updated waypoints to players
 
-- `/waypoint save`
+- `/xwp save`
   - Saves all waypoints to the configuration file
 
-- `/waypoint reload`
+- `/xwp reload`
   - Reloads waypoints from the configuration file
