@@ -1,7 +1,6 @@
 package com.zhaoch23.xaerosminimapserver.network.message;
 
 import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
-import com.zhaoch23.xaerosminimapserver.network.NetworkHandler;
 import io.netty.buffer.ByteBuf;
 import org.bukkit.entity.Player;
 

@@ -1,9 +1,10 @@
 package com.zhaoch23.xaerospatch.message;
 
-import com.zhaoch23.xaerospatch.RemoteWaypoint;
 import com.zhaoch23.xaerospatch.XaerosPatch;
+import com.zhaoch23.xaerospatch.common.IWaypoint;
+import com.zhaoch23.xaerospatch.common.WaypointServerConfig;
+import com.zhaoch23.xaerospatch.common.WaypointUtils;
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import xaero.common.message.MinimapMessage;
 import xaero.common.message.client.ClientMessageConsumer;
 import xaero.common.minimap.waypoints.Waypoint;
@@ -35,7 +36,14 @@ public class WaypointUpdatePacket extends MinimapMessage<WaypointUpdatePacket> {
             String name = NetworkUtils.readString(buf);
             String initials = NetworkUtils.readString(buf);
             WaypointColor color = WaypointColor.values()[buf.readInt()];
-            RemoteWaypoint waypoint = new RemoteWaypoint(x, y, z, name, initials, color);
+            Waypoint waypoint = new Waypoint(x, y, z, name, initials, color);
+
+            // TODO: Make this configurable
+            WaypointServerConfig serverConfig = ((IWaypoint) waypoint).getServerConfig();
+            serverConfig.serverWaypoint = true;
+            serverConfig.canShare = true;
+            serverConfig.canDisable = false;
+
             this.waypoints.add(waypoint);
         }
     }
@@ -69,22 +77,16 @@ public class WaypointUpdatePacket extends MinimapMessage<WaypointUpdatePacket> {
                     return;
                 }
 
-                WaypointSet waypointSet = world.getWaypointSet(world.getCurrentWaypointSetId());
+                // Add the Waypoints to default set
+                // TODO: Make this configurable
+                WaypointSet waypointSet = world.getWaypointSet("gui.xaero_default");
                 if (waypointSet == null) {
                     XaerosPatch.getLogger().error("WaypointSet is null, cannot update waypoints");
                     return;
                 }
 
                 // Remove all remote waypoints
-                List<RemoteWaypoint> waypointsToRemove = new ArrayList<>();
-                for (Waypoint waypoint : waypointSet.getWaypoints()) {
-                    if (waypoint instanceof RemoteWaypoint) {
-                        waypointsToRemove.add((RemoteWaypoint) waypoint);
-                    }
-                }
-                for (RemoteWaypoint waypoint : waypointsToRemove) {
-                    waypointSet.remove(waypoint);
-                }
+                WaypointUtils.clearWaypoints(waypointSet, true);
 
                 waypointSet.addAll(packet.waypoints);
 

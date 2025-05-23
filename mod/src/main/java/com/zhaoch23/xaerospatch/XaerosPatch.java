@@ -8,7 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 @Mod(
         modid = "xaerospatch",
-        name = "Xaeros' Minimap Patch",
+        name = "Xaero's Minimap Patch",
         version = "1.0",
         dependencies = "required-after:xaerominimap@[25.2.6,)"
 )

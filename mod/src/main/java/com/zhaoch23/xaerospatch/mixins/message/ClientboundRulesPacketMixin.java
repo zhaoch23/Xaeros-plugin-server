@@ -1,4 +1,4 @@
-package com.zhaoch23.xaerospatch.mixins;
+package com.zhaoch23.xaerospatch.mixins.message;
 
 import io.netty.buffer.ByteBuf;
 import org.spongepowered.asm.mixin.Mixin;

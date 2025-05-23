@@ -5,7 +5,7 @@ main: com.zhaoch23.xaerosminimapserver.XaerosMinimapServer
 commands:
   xwaypoint:
     description: "Manage waypoints"
-    usage: "/xwaypoint <set|remove|list|reload|save> [name] [color]"
+    usage: "/xwaypoint <set|remove|list|reload|save|update> [name] [color]"
     aliases: [xwp]
     permission: xaerosminimapserver.waypoint
 
