@@ -12,6 +12,8 @@
     "WaypointIoMixin",
     "WaypointMixin",
     "message.ClientboundRulesPacketMixin",
-    "message.MinimapMessageRegisterMixin"
+    "message.MinimapMessageRegisterMixin",
+    "render.WaypointMapRendererMixin",
+    "render.WaypointWorldRendererMixin"
   ]
 }

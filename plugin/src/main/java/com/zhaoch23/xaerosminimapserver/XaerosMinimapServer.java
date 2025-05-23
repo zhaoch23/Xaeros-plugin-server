@@ -41,6 +41,7 @@ public final class XaerosMinimapServer extends JavaPlugin implements Listener {
 
     public void reload() {
         saveDefaultConfig();
+        reloadConfig();
         setting.loadConfig(getConfig());
         setting.sendConfigToPlayers();
 

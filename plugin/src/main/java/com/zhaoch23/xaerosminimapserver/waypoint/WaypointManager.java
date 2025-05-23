@@ -49,7 +49,7 @@ public class WaypointManager {
         }
     }
 
-    public void addWaypoint(String name, String initials, Location location, String color, boolean update) {
+    public void addWaypoint(String name, String initials, Location location, String color, boolean transparent, boolean update) {
         World world = location.getWorld();
         if (world == null) return;
         WaypointColor waypointColor = WaypointColor.fromName(color);
@@ -59,19 +59,20 @@ public class WaypointManager {
                 location.getBlockZ(),
                 name,
                 initials,
-                waypointColor
+                waypointColor,
+                transparent
         );
         addWaypoint(world, waypoint, update);
     }
 
-    public void addWaypoint(String name, Location location, String color, boolean update) {
+    public void addWaypoint(String name, Location location, String color, boolean transparent, boolean update) {
         String initials = "";
         if (name.length() < 2) {
             initials = name.toUpperCase();
         } else {
             initials = name.substring(0, 2).toUpperCase();
         }
-        addWaypoint(name, initials, location, color, update);
+        addWaypoint(name, initials, location, color, transparent, update);
     }
 
     public boolean hasWaypoint(World world, String waypoint) {
@@ -160,7 +161,7 @@ public class WaypointManager {
             ConfigurationSection waypoint = waypoints.getConfigurationSection(worldName);
             World world = plugin.getServer().getWorld(worldName);
             if (world == null) {
-                plugin.getLogger().severe("World " + world + " not found");
+                plugin.getLogger().severe("World " + worldName + " not found");
                 continue;
             }
             for (String name : waypoint.getKeys(false)) {
@@ -171,6 +172,7 @@ public class WaypointManager {
                         continue;
                     }
                     String initials = waypointData.getString("initials");
+                    boolean transparent = waypointData.getBoolean("transparent", false);
 
                     Location location = new Location(
                             world,
@@ -180,13 +182,12 @@ public class WaypointManager {
                     );
 
                     if (initials == null)
-                        addWaypoint(name, location, waypointData.getString("color"), false);
+                        addWaypoint(name, location, waypointData.getString("color"), transparent, false);
                     else
-                        addWaypoint(name, initials, location, waypointData.getString("color"), false);
+                        addWaypoint(name, initials, location, waypointData.getString("color"), transparent, false);
                 } catch (Exception e) {
                     plugin.getLogger().severe("Failed to load " + name + " due to " + e);
                 }
-
             }
         }
         plugin.getLogger().info(prettyPrint());
@@ -206,6 +207,7 @@ public class WaypointManager {
                 waypointSection.set("z", waypoint.z);
                 waypointSection.set("color", waypoint.color.getName());
                 waypointSection.set("initials", waypoint.initials);
+                waypointSection.set("transparent", waypoint.transparent);
             }
         }
     }
@@ -233,6 +235,7 @@ public class WaypointManager {
                     sb.append(String.format("    Location: %d, %d, %d\n", 
                         waypoint.x, waypoint.y, waypoint.z));
                     sb.append(String.format("    Color: %s\n", waypoint.color));
+                    sb.append(String.format("    Transparent: %s\n", waypoint.transparent));
                 }
             }
         }

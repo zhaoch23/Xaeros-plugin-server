@@ -11,3 +11,4 @@ waypoints:
       z: 0
       color: RED
       initials: "TE"
+      transparent: true

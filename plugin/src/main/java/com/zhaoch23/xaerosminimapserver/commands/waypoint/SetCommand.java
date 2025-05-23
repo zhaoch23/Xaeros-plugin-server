@@ -35,7 +35,8 @@ public class SetCommand implements SubCommand {
         String name = args[4];
         String color = args[5];
         String initials = args.length > 6 ? args[6] : null;
-        boolean update = args.length <= 7 || Boolean.parseBoolean(args[7]);
+        boolean transparent = args.length > 7 && Boolean.parseBoolean(args[7]);
+        boolean update = args.length <= 8 || Boolean.parseBoolean(args[8]);
 
         Location location = new Location(player.getWorld(), x, y, z);
         
@@ -45,6 +46,7 @@ public class SetCommand implements SubCommand {
                 initials,
                 location,
                 color,
+                transparent,
                 update
             );
         } else {
@@ -52,6 +54,7 @@ public class SetCommand implements SubCommand {
                 name,
                 location,
                 color,
+                transparent,
                 update
             );
         }
@@ -98,6 +101,9 @@ public class SetCommand implements SubCommand {
             case 8:
                 completions.addAll(Arrays.asList("true", "false"));
                 break;
+            case 9:
+                completions.addAll(Arrays.asList("true", "false"));
+                break;
         }
 
         return completions;
@@ -110,6 +116,6 @@ public class SetCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "/waypoint set <x> <y> <z> <name> <color> [initials] [update]";
+        return "/xwp set <x> <y> <z> <name> <color> [initials] [transparent] [update]";
     }
 }

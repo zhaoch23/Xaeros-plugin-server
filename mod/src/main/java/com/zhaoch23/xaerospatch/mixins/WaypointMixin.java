@@ -27,6 +27,9 @@ public abstract class WaypointMixin {
         return xaerospatch$serverConfig;
     }
 
+    @Unique
+    private boolean xaerospatch$backgroundTransparent = false;
+
     @Inject(
             method = "isServerWaypoint",
             at = @At("HEAD"),
@@ -34,6 +37,14 @@ public abstract class WaypointMixin {
     )
     public void isServerWaypoint(CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(this.xaerospatch$serverConfig.serverWaypoint);
+    }
+
+    public boolean xaerospatch$isBackgroundTransparent() {
+        return xaerospatch$backgroundTransparent;
+    }
+
+    public void xaerospatch$setBackgroundTransparent(boolean transparent) {
+        xaerospatch$backgroundTransparent = transparent;
     }
 
 

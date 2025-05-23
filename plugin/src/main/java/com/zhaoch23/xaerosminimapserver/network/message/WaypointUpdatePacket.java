@@ -35,6 +35,7 @@ public class WaypointUpdatePacket implements IServerMessagePacket {
             NetworkHandler.writeString(buf, waypoint.name);
             NetworkHandler.writeString(buf, waypoint.initials);
             buf.writeInt(waypoint.color.ordinal());
+            buf.writeBoolean(waypoint.transparent);
         }
     }
 

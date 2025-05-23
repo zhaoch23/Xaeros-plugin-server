@@ -36,6 +36,7 @@ public class WaypointUpdatePacket extends MinimapMessage<WaypointUpdatePacket> {
             String name = NetworkUtils.readString(buf);
             String initials = NetworkUtils.readString(buf);
             WaypointColor color = WaypointColor.values()[buf.readInt()];
+            boolean transparent = buf.readBoolean();
             Waypoint waypoint = new Waypoint(x, y, z, name, initials, color);
 
             // TODO: Make this configurable
@@ -43,6 +44,7 @@ public class WaypointUpdatePacket extends MinimapMessage<WaypointUpdatePacket> {
             serverConfig.serverWaypoint = true;
             serverConfig.canShare = true;
             serverConfig.canDisable = false;
+            ((IWaypoint) waypoint).setBackgroundTransparent(transparent);
 
             this.waypoints.add(waypoint);
         }
