@@ -8,16 +8,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ListCommand implements SubCommand {
-    
+
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
         String waypointsList = XaerosMinimapServer.getWaypointManager().prettyPrint();
-        
+
         // Split the output into lines and send each line to the player
         for (String line : waypointsList.split("\n")) {
             sender.sendMessage(line);
         }
-        
+
         return true;
     }
 
@@ -33,6 +33,6 @@ public class ListCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "/waypoint list";
+        return "/xwp list";
     }
 }

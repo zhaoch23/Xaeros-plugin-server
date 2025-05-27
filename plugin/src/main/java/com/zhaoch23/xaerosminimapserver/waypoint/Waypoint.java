@@ -1,12 +1,15 @@
 package com.zhaoch23.xaerosminimapserver.waypoint;
 
+import java.util.Set;
+
 public class Waypoint {
     public final int x, y, z;
     public final String name, initials;
     public final WaypointColor color;
     public final boolean transparent;
+    public final Set<String> permissions;
 
-    public Waypoint(int x, int y, int z, String name, String initials, WaypointColor color, boolean transparent) {
+    public Waypoint(int x, int y, int z, String name, String initials, WaypointColor color, boolean transparent, Set<String> permissions) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -14,6 +17,7 @@ public class Waypoint {
         this.initials = initials;
         this.color = color;
         this.transparent = transparent;
+        this.permissions = permissions;
     }
 
     @Override
@@ -38,6 +42,7 @@ public class Waypoint {
                 ", initials='" + initials + '\'' +
                 ", color=" + color +
                 ", transparent=" + transparent +
+                ", permissions=" + permissions +
                 '}';
     }
 }

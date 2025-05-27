@@ -1,17 +1,20 @@
 package com.zhaoch23.xaerosminimapserver.commands.waypoint;
 
-import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
+import com.zhaoch23.xaerosminimapserver.commands.CommandUtils;
+import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class SetCommand implements SubCommand {
+
+    private static final String[] validColors = {"red", "green", "blue", "yellow", "purple", "orange", "white", "black"};
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
@@ -21,8 +24,8 @@ public class SetCommand implements SubCommand {
         }
 
         Player player = (Player) sender;
-        
-        if (args.length < 6) {
+
+        if (args.length < 7) {
             player.sendMessage(ChatColor.RED + "Usage: " + getUsage());
             return true;
         }
@@ -31,36 +34,41 @@ public class SetCommand implements SubCommand {
         double x = parseCoordinate(args[1], player.getLocation().getX());
         double y = parseCoordinate(args[2], player.getLocation().getY());
         double z = parseCoordinate(args[3], player.getLocation().getZ());
-        
-        String name = args[4];
-        String color = args[5];
-        String initials = args.length > 6 ? args[6] : null;
-        boolean transparent = args.length > 7 && Boolean.parseBoolean(args[7]);
-        boolean update = args.length <= 8 || Boolean.parseBoolean(args[8]);
+
+        String id = args[4];
+        String name = args[5];
+        String color = args[6];
+        String initials = args.length > 7 ? args[7] : null;
+        boolean transparent = args.length > 8 && Boolean.parseBoolean(args[8]);
+        boolean refresh = args.length <= 9 || Boolean.parseBoolean(args[9]);
 
         Location location = new Location(player.getWorld(), x, y, z);
-        
+
         if (initials != null) {
             XaerosMinimapServer.getWaypointManager().addWaypoint(
-                name,
-                initials,
-                location,
-                color,
-                transparent,
-                update
+                    id,
+                    name,
+                    initials,
+                    location,
+                    color,
+                    transparent,
+                    new HashSet<>(),
+                    refresh
             );
         } else {
             XaerosMinimapServer.getWaypointManager().addWaypoint(
-                name,
-                location,
-                color,
-                transparent,
-                update
+                    id,
+                    name,
+                    location,
+                    color,
+                    transparent,
+                    new HashSet<>(),
+                    refresh
             );
         }
 
-        player.sendMessage(ChatColor.GREEN + "Waypoint '" + name + "' has been set at " + 
-            String.format("%.1f, %.1f, %.1f", x, y, z) + "!");
+        player.sendMessage(ChatColor.GREEN + "Waypoint '" + id + "' has been set at " +
+                String.format("%.1f, %.1f, %.1f", x, y, z) + "!");
         return true;
     }
 
@@ -88,22 +96,26 @@ public class SetCommand implements SubCommand {
                 completions.add("~0");
                 completions.add("~1");
                 completions.add("~-1");
-                break;
+                return completions;
             case 5:
-                completions.add("<name>");
-                break;
+                completions.add("<id>");
+                return completions;
             case 6:
-                completions.addAll(Arrays.asList("red", "green", "blue", "yellow", "purple", "orange", "white", "black"));
-                break;
+                completions.add("<name>");
+                return completions;
             case 7:
-                completions.add("<initials>");
-                break;
+                for (String color : validColors) {
+                    if (color.startsWith(args[5])) {
+                        completions.add(color);
+                    }
+                }
+                return completions;
             case 8:
-                completions.addAll(Arrays.asList("true", "false"));
-                break;
+                completions.add("<initials>");
+                return completions;
             case 9:
-                completions.addAll(Arrays.asList("true", "false"));
-                break;
+            case 10:
+                return CommandUtils.completeBoolean(args[9]);
         }
 
         return completions;
@@ -116,6 +128,6 @@ public class SetCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "/xwp set <x> <y> <z> <name> <color> [initials] [transparent] [update]";
+        return "/xwp set <x> <y> <z> <id> <name> <color> [initials] [transparent] [refresh]";
     }
 }

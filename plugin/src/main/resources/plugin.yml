@@ -2,10 +2,13 @@ name: XaerosMinimapServer
 version: '${version}'
 main: com.zhaoch23.xaerosminimapserver.XaerosMinimapServer
 
+dependencies:
+  - LuckPerms
+
 commands:
   xwaypoint:
     description: "Manage waypoints"
-    usage: "/xwaypoint <set|remove|list|reload|save|update>"
+    usage: "/xwaypoint <set|remove|list|reload|save|refresh>"
     aliases: [xwp]
     permission: xaerosminimapserver.waypoint
 

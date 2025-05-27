@@ -3,12 +3,18 @@ rules:
   allowNetherCaveModeOnServer: true
   allowEndCaveModeOnServer: true
 
+admin:
+  admin-permission: "xaerosminimapwaypoint.admin"
+
 waypoints:
   world:
-    Test:
+    id_test:
+      name: "Test"
       x: 0
       y: 100
       z: 0
       color: RED
       initials: "TE"
       transparent: true
+      node: 
+        - "mypermission_group.node" # Managed by LuckPerms

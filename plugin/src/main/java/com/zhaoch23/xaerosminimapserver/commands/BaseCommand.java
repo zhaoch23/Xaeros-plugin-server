@@ -1,10 +1,10 @@
 package com.zhaoch23.xaerosminimapserver.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class BaseCommand implements TabExecutor {
     private final String command;
@@ -43,7 +43,9 @@ public abstract class BaseCommand implements TabExecutor {
         if (args.length == 1) {
             ArrayList<String> tabCompletes = new ArrayList<>();
             for (SubCommand subCommand : this.subCommands) {
-                tabCompletes.add(subCommand.getName());
+                if (subCommand.getName().startsWith(args[0])) {
+                    tabCompletes.add(subCommand.getName());
+                }
             }
             return tabCompletes;
         } else {
@@ -55,7 +57,7 @@ public abstract class BaseCommand implements TabExecutor {
         }
         return null;
     }
-    
+
     protected void registerSubCommand(SubCommand subCommand) {
         this.subCommands.add(subCommand);
     }

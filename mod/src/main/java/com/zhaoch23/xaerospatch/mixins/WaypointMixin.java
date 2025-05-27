@@ -39,6 +39,7 @@ public abstract class WaypointMixin {
         cir.setReturnValue(this.xaerospatch$serverConfig.serverWaypoint);
     }
 
+    // TODO: Add this to add waypoint GUI
     public boolean xaerospatch$isBackgroundTransparent() {
         return xaerospatch$backgroundTransparent;
     }

@@ -5,16 +5,16 @@ import com.zhaoch23.xaerosminimapserver.waypoint.Waypoint;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.util.Set;
+import java.util.List;
 
 public class WaypointUpdatePacket implements IServerMessagePacket {
 
-    private final Set<Waypoint> waypoints;
+    private final List<Waypoint> waypoints;
 
     private final String worldName;
 
 
-    public WaypointUpdatePacket(Set<Waypoint> waypoints, String worldName) {
+    public WaypointUpdatePacket(List<Waypoint> waypoints, String worldName) {
         this.waypoints = waypoints;
         this.worldName = worldName;
     }

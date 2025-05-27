@@ -1,7 +1,7 @@
 package com.zhaoch23.xaerosminimapserver.commands.waypoint;
 
-import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
+import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -29,6 +29,6 @@ public class SaveCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "/waypoint save";
+        return "/xwp save";
     }
 }

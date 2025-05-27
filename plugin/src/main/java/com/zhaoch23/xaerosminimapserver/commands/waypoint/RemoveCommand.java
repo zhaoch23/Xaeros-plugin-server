@@ -1,7 +1,7 @@
 package com.zhaoch23.xaerosminimapserver.commands.waypoint;
 
-import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
+import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -19,7 +19,7 @@ public class RemoveCommand implements SubCommand {
         }
 
         Player player = (Player) sender;
-        
+
         if (args.length < 2) {
             player.sendMessage(ChatColor.RED + "Usage: " + getUsage());
             return true;
@@ -32,7 +32,7 @@ public class RemoveCommand implements SubCommand {
         }
         XaerosMinimapServer.getWaypointManager().removeWaypoint(player.getWorld(), name, true);
         player.sendMessage(ChatColor.GREEN + "Waypoint '" + name + "' has been removed!");
-        
+
         return true;
     }
 
@@ -48,7 +48,7 @@ public class RemoveCommand implements SubCommand {
             // Add existing waypoint names to tab completion
             Player player = (Player) sender;
             XaerosMinimapServer.getWaypointManager().getWaypoints(player.getWorld())
-                .forEach(waypoint -> completions.add(waypoint.name));
+                    .forEach((id, waypoint) -> completions.add(id));
         }
 
         return completions;
@@ -61,6 +61,6 @@ public class RemoveCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "/waypoint remove <name>";
+        return "/xwp remove <Id>";
     }
 }
