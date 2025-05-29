@@ -6,7 +6,6 @@ import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import com.zhaoch23.xaerosminimapserver.waypoint.WaypointManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -33,27 +32,23 @@ public class ShowCommand implements SubCommand {
             return true;
         }
 
-        World world = Bukkit.getWorld(worldName);
-        if (world == null) {
-            sender.sendMessage(ChatColor.RED + "World not found!");
-            return true;
-        }
-
         WaypointManager waypointManager = XaerosMinimapServer.getWaypointManager();
 
-        if (!waypointManager.getWaypoints(world).containsKey(id)) {
+        if (!waypointManager.hasWaypoint(worldName, id)) {
             sender.sendMessage(ChatColor.RED + "Waypoint not found!");
             return true;
         }
 
         if (show) {
-            waypointManager.grantWaypoint(player, world, id);
+            waypointManager.grantWaypoint(player, worldName, id);
         } else {
-            waypointManager.revokeWaypoint(player, world, id);
+            waypointManager.revokeWaypoint(player, worldName, id);
         }
         sender.sendMessage(ChatColor.GREEN + "Waypoint '" + id + "' has been " + (show ? "shown" : "hidden") + " for player " + playerName + ".");
 
-        waypointManager.sendWaypointsToPlayer(player);
+        if (player.isOnline() && player.getWorld().getName().equals(worldName)) {
+            waypointManager.sendWaypointsToPlayer(player);
+        }
 
         return true;
     }

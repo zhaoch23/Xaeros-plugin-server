@@ -21,10 +21,13 @@ public abstract class BaseCommand implements TabExecutor {
             sender.sendMessage("&cYou don't have permission to do this!");
             return true;
         }
-        if (args.length == 0) {
+        if (args.length == 0 || args[0].equals("help")) {
+            StringBuilder usage = new StringBuilder();
+            usage.append("&cUsage: &f").append(this.getName()).append(" <subcommand> [args]\n");
             for (SubCommand subCommand : this.subCommands) {
-                sender.sendMessage(subCommand.getUsage());
+                usage.append("&c").append(subCommand.getName()).append(": &f").append(subCommand.getUsage()).append("\n");
             }
+            sender.sendMessage(usage.toString());
             return false;
         }
         for (SubCommand subCommand : this.subCommands) {

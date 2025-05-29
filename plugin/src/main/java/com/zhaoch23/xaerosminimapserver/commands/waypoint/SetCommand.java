@@ -18,38 +18,52 @@ public class SetCommand implements SubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used by players!");
+        if (args.length < 8) {
+            sender.sendMessage(ChatColor.RED + "Usage: " + getUsage());
             return true;
         }
 
-        Player player = (Player) sender;
-
-        if (args.length < 7) {
-            player.sendMessage(ChatColor.RED + "Usage: " + getUsage());
+        if (!(sender instanceof Player) &&
+                (args[1].equals("~") || args[2].equals("~") || args[3].equals("~") || args[4].equals("~"))) {
+            sender.sendMessage(ChatColor.RED + "Usage: " + getUsage());
             return true;
         }
 
-        // Parse coordinates
-        double x = parseCoordinate(args[1], player.getLocation().getX());
-        double y = parseCoordinate(args[2], player.getLocation().getY());
-        double z = parseCoordinate(args[3], player.getLocation().getZ());
+        String worldName = args[1];
+        if (worldName.equals("~")) {
+            Player player = (Player) sender;
+            worldName = player.getWorld().getName();
+        }
 
-        String id = args[4];
-        String name = args[5];
-        String color = args[6];
-        String initials = args.length > 7 ? args[7] : null;
-        boolean transparent = args.length > 8 && Boolean.parseBoolean(args[8]);
-        boolean refresh = args.length <= 9 || Boolean.parseBoolean(args[9]);
+        double x, y, z;
+        if (sender instanceof Player) {
+            Player player = (Player) sender;
+            // Parse coordinates
+            x = parseCoordinate(args[2], player.getLocation().getX());
+            y = parseCoordinate(args[3], player.getLocation().getY());
+            z = parseCoordinate(args[4], player.getLocation().getZ());
+        } else {
+            x = parseCoordinate(args[2], 0);
+            y = parseCoordinate(args[3], 0);
+            z = parseCoordinate(args[4], 0);
+        }
 
-        Location location = new Location(player.getWorld(), x, y, z);
+        String id = args[5];
+        String name = args[6];
+        String color = args[7];
+        String initials = args.length > 8 ? args[8] : null;
+        boolean transparent = args.length > 9 && Boolean.parseBoolean(args[9]);
+        boolean refresh = args.length <= 10 || Boolean.parseBoolean(args[10]);
 
         if (initials != null) {
             XaerosMinimapServer.getWaypointManager().addWaypoint(
                     id,
                     name,
                     initials,
-                    location,
+                    worldName,
+                    (int) x,
+                    (int) y,
+                    (int) z,
                     color,
                     transparent,
                     new HashSet<>(),
@@ -59,7 +73,10 @@ public class SetCommand implements SubCommand {
             XaerosMinimapServer.getWaypointManager().addWaypoint(
                     id,
                     name,
-                    location,
+                    worldName,
+                    (int) x,
+                    (int) y,
+                    (int) z,
                     color,
                     transparent,
                     new HashSet<>(),
@@ -67,7 +84,7 @@ public class SetCommand implements SubCommand {
             );
         }
 
-        player.sendMessage(ChatColor.GREEN + "Waypoint '" + id + "' has been set at " +
+        sender.sendMessage(ChatColor.GREEN + "Waypoint '" + id + "' has been set at " +
                 String.format("%.1f, %.1f, %.1f", x, y, z) + "!");
         return true;
     }
@@ -82,40 +99,42 @@ public class SetCommand implements SubCommand {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            return new ArrayList<>();
-        }
-
         List<String> completions = new ArrayList<>();
 
         switch (args.length) {
             case 2:
+                completions.addAll(CommandUtils.completeWorldName(args[1]));
+                if (args[1].isEmpty()) {
+                    completions.add("~");
+                }
+                return completions;
             case 3:
             case 4:
+            case 5:
                 completions.add("~");
                 completions.add("~0");
                 completions.add("~1");
                 completions.add("~-1");
                 return completions;
-            case 5:
+            case 6:
                 completions.add("<id>");
                 return completions;
-            case 6:
+            case 7:
                 completions.add("<name>");
                 return completions;
-            case 7:
+            case 8:
                 for (String color : validColors) {
-                    if (color.startsWith(args[5])) {
+                    if (color.startsWith(args[7])) {
                         completions.add(color);
                     }
                 }
                 return completions;
-            case 8:
+            case 9:
                 completions.add("<initials>");
                 return completions;
-            case 9:
             case 10:
-                return CommandUtils.completeBoolean(args[9]);
+            case 11:
+                return CommandUtils.completeBoolean(args[10]);
         }
 
         return completions;
@@ -128,6 +147,6 @@ public class SetCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "/xwp set <x> <y> <z> <id> <name> <color> [initials] [transparent] [refresh]";
+        return "/xwp set <world> <x> <y> <z> <id> <name> <color> [initials] [transparent] [refresh]";
     }
 }

@@ -13,6 +13,7 @@ public class WaypointCommand extends BaseCommand {
         registerSubCommand(new ListCommand());
         registerSubCommand(new RefreshCommand());
         registerSubCommand(new ShowCommand());
+        registerSubCommand(new SendCommand());
     }
 
     @Override

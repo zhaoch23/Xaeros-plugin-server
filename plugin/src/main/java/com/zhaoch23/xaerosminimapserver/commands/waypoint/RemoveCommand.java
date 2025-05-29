@@ -1,7 +1,9 @@
 package com.zhaoch23.xaerosminimapserver.commands.waypoint;
 
 import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
+import com.zhaoch23.xaerosminimapserver.commands.CommandUtils;
 import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
+import com.zhaoch23.xaerosminimapserver.waypoint.WaypointManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,38 +15,45 @@ public class RemoveCommand implements SubCommand {
 
     @Override
     public boolean onCommand(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "This command can only be used by players!");
+        if (args.length < 3) {
+            sender.sendMessage(ChatColor.RED + "Usage: " + getUsage());
+            return true;
+        }
+        WaypointManager waypointManager = XaerosMinimapServer.getWaypointManager();
+        String worldName = args[1];
+        if (worldName.equals("~")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "Usage: " + getUsage());
+                return true;
+            }
+            Player player = (Player) sender;
+            worldName = player.getWorld().getName();
+        }
+
+        if (!waypointManager.hasWaypoint(worldName, args[2])) {
+            sender.sendMessage(ChatColor.RED + "Waypoint '" + args[2] + "' does not exist!");
             return true;
         }
 
-        Player player = (Player) sender;
-
-        if (args.length < 2) {
-            player.sendMessage(ChatColor.RED + "Usage: " + getUsage());
-            return true;
-        }
-
-        String name = args[1];
-        if (!XaerosMinimapServer.getWaypointManager().hasWaypoint(player.getWorld(), name)) {
-            player.sendMessage(ChatColor.RED + "Waypoint '" + name + "' does not exist!");
-            return true;
-        }
-        XaerosMinimapServer.getWaypointManager().removeWaypoint(player.getWorld(), name, true);
-        player.sendMessage(ChatColor.GREEN + "Waypoint '" + name + "' has been removed!");
+        String name = args[2];
+        waypointManager.removeWaypoint(worldName, name, true);
+        sender.sendMessage(ChatColor.GREEN + "Waypoint '" + name + "' has been removed!");
 
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, String[] args) {
-        if (!(sender instanceof Player)) {
-            return new ArrayList<>();
-        }
-
         List<String> completions = new ArrayList<>();
 
         if (args.length == 2) {
+            completions.addAll(CommandUtils.completeWorldName(args[0]));
+            if (args[1].isEmpty()) {
+                completions.add("~");
+            }
+            return completions;
+        }
+        if (args.length == 3) {
             // Add existing waypoint names to tab completion
             Player player = (Player) sender;
             XaerosMinimapServer.getWaypointManager().getWaypoints(player.getWorld())
@@ -61,6 +70,6 @@ public class RemoveCommand implements SubCommand {
 
     @Override
     public String getUsage() {
-        return "/xwp remove <Id>";
+        return "/xwp remove <world> <Id>";
     }
 }

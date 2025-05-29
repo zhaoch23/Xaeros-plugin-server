@@ -6,7 +6,9 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CommandUtils {
 
@@ -23,13 +25,18 @@ public class CommandUtils {
     }
 
     public static List<String> completeWorldName(String arg) {
-        List<String> completions = new ArrayList<>();
-        for (World world : XaerosMinimapServer.plugin.getServer().getWorlds()) {
+        Set<String> completions = new HashSet<>();
+        for (String world : XaerosMinimapServer.getWaypointManager().getWorlds()) {
+            if (world.toLowerCase().startsWith(arg.toLowerCase())) {
+                completions.add(world);
+            }
+        }
+        for (World world : Bukkit.getWorlds()) {
             if (world.getName().toLowerCase().startsWith(arg.toLowerCase())) {
                 completions.add(world.getName());
             }
         }
-        return completions;
+        return new ArrayList<>(completions);
     }
 
     public static List<String> completeBoolean(String arg) {
