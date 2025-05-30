@@ -1,4 +1,4 @@
-package com.zhaoch23.xaerospatch.mixins;
+package com.zhaoch23.xaerospatch.mixins.minimap;
 
 import com.zhaoch23.xaerospatch.XaerosPatch;
 import com.zhaoch23.xaerospatch.message.WaypointRequestPacket;

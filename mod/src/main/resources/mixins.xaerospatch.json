@@ -4,16 +4,19 @@
   "package": "com.zhaoch23.xaerospatch.mixins",
   "compatibilityLevel": "JAVA_8",
   "client": [
-    "gui.GuiClearSetMixin",
-    "gui.GuiWaypointsMixin"
+    "minimap.gui.GuiClearSetMixin",
+    "minimap.gui.GuiWaypointsMixin"
   ],
   "mixins": [
-    "MinimapWorldStateUpdaterMixin",
-    "WaypointIoMixin",
-    "WaypointMixin",
-    "message.ClientboundRulesPacketMixin",
-    "message.MinimapMessageRegisterMixin",
-    "render.WaypointMapRendererMixin",
-    "render.WaypointWorldRendererMixin"
+    "minimap.MinimapWorldStateUpdaterMixin",
+    "minimap.WaypointIoMixin",
+    "minimap.WaypointMixin",
+    "minimap.message.ClientboundRulesPacketMixin",
+    "minimap.message.MinimapMessageRegisterMixin",
+    "minimap.render.WaypointMapRendererMixin",
+    "minimap.render.WaypointWorldRendererMixin",
+    "worldmap.SupportXaeroMinimapMixin",
+    "worldmap.WaypointMixin",
+    "worldmap.render.WaypointRendererMixin"
   ]
 }

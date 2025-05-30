@@ -1,4 +1,4 @@
-package com.zhaoch23.xaerospatch.mixins;
+package com.zhaoch23.xaerospatch.mixins.minimap;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

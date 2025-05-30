@@ -33,4 +33,10 @@ public class WaypointServerConfig {
         canDisable = buf.readBoolean();
     }
 
+    public void copyTo(WaypointServerConfig other) {
+        other.serverWaypoint = this.serverWaypoint;
+        other.canShare = this.canShare;
+        other.canDisable = this.canDisable;
+    }
+
 }

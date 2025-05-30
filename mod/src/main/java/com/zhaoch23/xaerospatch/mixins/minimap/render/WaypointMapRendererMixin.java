@@ -1,4 +1,4 @@
-package com.zhaoch23.xaerospatch.mixins.render;
+package com.zhaoch23.xaerospatch.mixins.minimap.render;
 
 import com.zhaoch23.xaerospatch.common.IWaypoint;
 import net.minecraft.client.gui.Gui;
@@ -53,13 +53,13 @@ public abstract class WaypointMapRendererMixin {
             int color
     ) {
         // only draw the background if we don't have transparent==true
-        if (currentWaypoint == null || !((IWaypoint)currentWaypoint).isBackgroundTransparent()) {
+        if (currentWaypoint == null || !((IWaypoint) currentWaypoint).isBackgroundTransparent()) {
             Gui.drawRect(rectX1, rectY1, rectX2, rectY2, color);
         }
     }
 
     @Inject(
-            method =  "drawIconOnGUI(Lxaero/common/minimap/render/MinimapRendererHelper;" +
+            method = "drawIconOnGUI(Lxaero/common/minimap/render/MinimapRendererHelper;" +
                     "Lxaero/common/minimap/waypoints/Waypoint;III)V",
             at = @At("RETURN")
     )

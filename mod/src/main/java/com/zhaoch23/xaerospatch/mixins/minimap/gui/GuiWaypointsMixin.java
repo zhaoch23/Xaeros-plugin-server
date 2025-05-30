@@ -1,4 +1,4 @@
-package com.zhaoch23.xaerospatch.mixins.gui;
+package com.zhaoch23.xaerospatch.mixins.minimap.gui;
 
 import com.zhaoch23.xaerospatch.common.IWaypoint;
 import net.minecraft.client.gui.GuiButton;

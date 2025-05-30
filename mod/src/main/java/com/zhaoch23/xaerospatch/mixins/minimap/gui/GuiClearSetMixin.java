@@ -1,4 +1,4 @@
-package com.zhaoch23.xaerospatch.mixins.gui;
+package com.zhaoch23.xaerospatch.mixins.minimap.gui;
 
 import com.zhaoch23.xaerospatch.common.WaypointUtils;
 import org.spongepowered.asm.mixin.Mixin;

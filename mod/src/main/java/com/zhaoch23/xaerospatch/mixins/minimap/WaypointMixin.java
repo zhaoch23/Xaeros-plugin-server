@@ -1,4 +1,4 @@
-package com.zhaoch23.xaerospatch.mixins;
+package com.zhaoch23.xaerospatch.mixins.minimap;
 
 import com.zhaoch23.xaerospatch.common.IWaypoint;
 import com.zhaoch23.xaerospatch.common.WaypointServerConfig;
@@ -21,14 +21,13 @@ public abstract class WaypointMixin {
 
     @Unique
     private final WaypointServerConfig xaerospatch$serverConfig = WaypointServerConfig.createLocal();
+    @Unique
+    private boolean xaerospatch$backgroundTransparent = false;
 
     @Unique
     public WaypointServerConfig xaerospatch$getServerConfig() {
         return xaerospatch$serverConfig;
     }
-
-    @Unique
-    private boolean xaerospatch$backgroundTransparent = false;
 
     @Inject(
             method = "isServerWaypoint",

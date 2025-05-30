@@ -1,16 +1,13 @@
-package com.zhaoch23.xaerospatch.mixins.render;
+package com.zhaoch23.xaerospatch.mixins.minimap.render;
 
 import com.zhaoch23.xaerospatch.common.IWaypoint;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import xaero.common.icon.XaeroIcon;
 import xaero.common.minimap.waypoints.Waypoint;
-import xaero.hud.minimap.compass.render.CompassRenderer;
-import xaero.hud.minimap.waypoint.render.world.WaypointWorldRenderer;
+
 
 @Mixin(
         value = {xaero.hud.minimap.waypoint.render.world.WaypointWorldRenderer.class},
