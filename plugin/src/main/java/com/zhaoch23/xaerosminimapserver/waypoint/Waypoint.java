@@ -8,8 +8,17 @@ public class Waypoint {
     public final WaypointColor color;
     public final boolean transparent;
     public final Set<String> permissions;
+    public final String description;
 
-    public Waypoint(int x, int y, int z, String name, String initials, WaypointColor color, boolean transparent, Set<String> permissions) {
+    public Waypoint(
+        int x, int y, int z, 
+        String name, 
+        String initials,
+        WaypointColor color, 
+        boolean transparent, 
+        Set<String> permissions, 
+        String description
+    ) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -18,6 +27,7 @@ public class Waypoint {
         this.color = color;
         this.transparent = transparent;
         this.permissions = permissions;
+        this.description = description;
     }
 
     @Override

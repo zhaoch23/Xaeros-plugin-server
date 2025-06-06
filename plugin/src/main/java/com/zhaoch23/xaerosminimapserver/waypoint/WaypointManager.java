@@ -8,7 +8,6 @@ import net.luckperms.api.cacheddata.CachedPermissionData;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -75,6 +74,7 @@ public class WaypointManager {
             String color,
             boolean transparent,
             Set<String> permissions,
+            String description,
             boolean refresh
     ) {
         WaypointColor waypointColor = WaypointColor.fromName(color);
@@ -86,7 +86,8 @@ public class WaypointManager {
                 initials,
                 waypointColor,
                 transparent,
-                permissions
+                permissions,
+                description
         );
         waypoint.permissions.add(getPermissionNode(worldName, id));
         waypoint.permissions.add(adminPermission);
@@ -103,6 +104,7 @@ public class WaypointManager {
             String color,
             boolean transparent,
             Set<String> permissions,
+            String description,
             boolean refresh
     ) {
         String initials = "";
@@ -111,7 +113,7 @@ public class WaypointManager {
         } else {
             initials = name.substring(0, 2).toUpperCase();
         }
-        addWaypoint(id, name, initials, worldName, x, y, z, color, transparent, permissions, refresh);
+        addWaypoint(id, name, initials, worldName, x, y, z, color, transparent, permissions, description, refresh);
     }
 
     public boolean hasWaypoint(World world, String id) {
@@ -316,12 +318,13 @@ public class WaypointManager {
                     int y = waypointData.getInt("y");
                     int z = waypointData.getInt("z");
                     String name = waypointData.getString("name", id);
+                    String description = waypointData.getString("description", "");
                     Set<String> permissions = new HashSet<>(waypointData.getStringList("permissions"));
 
                     if (initials == null)
-                        addWaypoint(id, name, worldName, x, y, z, waypointData.getString("color"), transparent, permissions, false);
+                        addWaypoint(id, name, worldName, x, y, z, waypointData.getString("color"), transparent, permissions, description, false);
                     else
-                        addWaypoint(id, name, initials, worldName, x, y, z, waypointData.getString("color"), transparent, permissions, false);
+                        addWaypoint(id, name, initials, worldName, x, y, z, waypointData.getString("color"), transparent, permissions, description, false);
                 } catch (Exception e) {
                     plugin.getLogger().severe("Failed to load " + id + " due to " + e);
                 }
@@ -351,6 +354,7 @@ public class WaypointManager {
                 waypointSection.set("initials", waypointData.initials);
                 waypointSection.set("transparent", waypointData.transparent);
                 waypointSection.set("permissions", waypointData.permissions);
+                waypointSection.set("description", waypointData.description);
             }
         }
     }

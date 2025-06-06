@@ -9,4 +9,8 @@ public interface IWaypoint {
     void setBackgroundTransparent(boolean transparent);
 
     WaypointServerConfig getServerConfig();
+
+    String getDescription();
+
+    void setDescription(String description);
 }

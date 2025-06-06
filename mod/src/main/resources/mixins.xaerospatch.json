@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_8",
   "client": [
     "minimap.gui.GuiClearSetMixin",
-    "minimap.gui.GuiWaypointsMixin"
+    "minimap.gui.GuiWaypointsMixin",
   ],
   "mixins": [
     "minimap.MinimapWorldStateUpdaterMixin",
@@ -17,6 +17,7 @@
     "minimap.render.WaypointWorldRendererMixin",
     "worldmap.SupportXaeroMinimapMixin",
     "worldmap.WaypointMixin",
+    "worldmap.gui.WaypointReaderMixin",
     "worldmap.render.WaypointRendererMixin"
   ]
 }

@@ -67,6 +67,7 @@ public class SetCommand implements SubCommand {
                     color,
                     transparent,
                     new HashSet<>(),
+                    "",
                     refresh
             );
         } else {
@@ -80,6 +81,7 @@ public class SetCommand implements SubCommand {
                     color,
                     transparent,
                     new HashSet<>(),
+                    "",
                     refresh
             );
         }

@@ -13,7 +13,7 @@ import xaero.map.mods.gui.Waypoint;
         value = xaero.map.mods.SupportXaeroMinimap.class,
         remap = false
 )
-public class SupportXaeroMinimapMixin {
+abstract public class SupportXaeroMinimapMixin {
 
     /**
      * @author zhaoch23
@@ -30,6 +30,7 @@ public class SupportXaeroMinimapMixin {
         IWaypoint iconverted = (IWaypoint) converted;
         IWaypoint iorigin = (IWaypoint) w;
         iconverted.setBackgroundTransparent(iorigin.isBackgroundTransparent());
+        iconverted.setDescription(iorigin.getDescription());
         iorigin.getServerConfig().copyTo(iconverted.getServerConfig());
     }
 
