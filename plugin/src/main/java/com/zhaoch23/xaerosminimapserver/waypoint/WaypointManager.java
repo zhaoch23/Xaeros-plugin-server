@@ -379,7 +379,7 @@ public class WaypointManager {
                 sb.append("  No waypoints\n");
             } else {
                 for (Map.Entry<String, Waypoint> waypoint : worldWaypoints.entrySet()) {
-                     Waypoint waypointData = waypoint.getValue();
+                    Waypoint waypointData = waypoint.getValue();
                     sb.append(String.format("  %s (%s) (%s)\n", waypoint.getKey(), waypointData.name, waypointData.initials));
                     sb.append(String.format("    Location: %d, %d, %d\n",
                             waypointData.x, waypointData.y, waypointData.z));

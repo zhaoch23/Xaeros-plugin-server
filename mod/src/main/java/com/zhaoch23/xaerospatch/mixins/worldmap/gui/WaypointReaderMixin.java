@@ -1,25 +1,40 @@
 package com.zhaoch23.xaerospatch.mixins.worldmap.gui;
 
+import com.zhaoch23.xaerospatch.common.DropDownSlot;
 import com.zhaoch23.xaerospatch.common.IWaypoint;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Pseudo;
 import xaero.map.WorldMap;
+import xaero.map.element.MapElementReader;
+import xaero.map.gui.CursorBox;
 import xaero.map.gui.GuiMap;
 import xaero.map.gui.IRightClickableElement;
 import xaero.map.gui.dropdown.rightclick.RightClickOption;
 import xaero.map.mods.SupportMods;
 import xaero.map.mods.gui.Waypoint;
+import xaero.map.mods.gui.WaypointRenderContext;
+import xaero.map.mods.gui.WaypointRenderer;
 
 import java.util.ArrayList;
 
 @Pseudo
 @Mixin(
-    value = {xaero.map.mods.gui.WaypointReader.class},
-    remap = false
+        value = {xaero.map.mods.gui.WaypointReader.class},
+        remap = false
 )
-public class WaypointReaderMixin {
+public abstract class WaypointReaderMixin extends MapElementReader<Waypoint, WaypointRenderContext, WaypointRenderer> {
+
+    @Override
+    public CursorBox getTooltip(Waypoint element, WaypointRenderContext context, boolean overMenu) {
+        String description = ((IWaypoint) element).getDescription();
+        if (description != null && !description.isEmpty()) {
+            return new CursorBox(description);
+        }
+        return null;
+    }
 
     /**
      * @author zhaoch23
@@ -29,9 +44,9 @@ public class WaypointReaderMixin {
     public ArrayList<RightClickOption> getRightClickOptions(final Waypoint element, IRightClickableElement target) {
         ArrayList<RightClickOption> rightClickOptions = new ArrayList<>();
 
-        final boolean isServerWaypoint = ((IWaypoint)element).isServerWaypoint();
+        final boolean isServerWaypoint = ((IWaypoint) element).isServerWaypoint();
 
-        rightClickOptions.add(new RightClickOption(element.getName(), 0, target) {
+        rightClickOptions.add(new DropDownSlot(element.getName(), 0, target, false) {
             public void onAction(GuiScreen screen) {
                 if (!isServerWaypoint) {
                     SupportMods.xaeroMinimap.openWaypoint((GuiMap) screen, element);
@@ -40,10 +55,11 @@ public class WaypointReaderMixin {
         });
 
         if (WorldMap.settings.coordinates && !SupportMods.xaeroMinimap.hidingWaypointCoordinates()) {
-            rightClickOptions.add(new RightClickOption(
+            rightClickOptions.add(new DropDownSlot(
                     String.format("X: %d, Y: %s, Z: %d", element.getX(), element.isyIncluded() ? String.valueOf(element.getY()) : "~", element.getZ()),
                     rightClickOptions.size(),
-                    target) {
+                    target,
+                    false) {
                 public void onAction(GuiScreen screen) {
                     if (!isServerWaypoint) {
                         SupportMods.xaeroMinimap.openWaypoint((GuiMap) screen, element);
@@ -54,10 +70,10 @@ public class WaypointReaderMixin {
 
         String description = ((IWaypoint) element).getDescription();
         if (description != null && !description.isEmpty()) {
-            rightClickOptions.add(new RightClickOption(description, rightClickOptions.size(), target) {
+            rightClickOptions.add(new DropDownSlot(description, rightClickOptions.size(), target, false) {
                 public void onAction(GuiScreen screen) {
                     if (!isServerWaypoint) {
-                        SupportMods.xaeroMinimap.openWaypoint((GuiMap)screen, element);
+                        SupportMods.xaeroMinimap.openWaypoint((GuiMap) screen, element);
                     }
                 }
             });
@@ -66,27 +82,23 @@ public class WaypointReaderMixin {
         if (!isServerWaypoint) {
             rightClickOptions.add((new RightClickOption("gui.xaero_right_click_waypoint_edit", rightClickOptions.size(), target) {
                 public void onAction(GuiScreen screen) {
-                    SupportMods.xaeroMinimap.openWaypoint((GuiMap)screen, element);
+                    SupportMods.xaeroMinimap.openWaypoint((GuiMap) screen, element);
                 }
             }).setNameFormatArgs("E"));
-        }
+            rightClickOptions.add((new RightClickOption("gui.xaero_right_click_waypoint_teleport", rightClickOptions.size(), target) {
+                public void onAction(GuiScreen screen) {
+                    SupportMods.xaeroMinimap.teleportToWaypoint(screen, element);
+                }
 
-        rightClickOptions.add((new RightClickOption("gui.xaero_right_click_waypoint_teleport", rightClickOptions.size(), target) {
-            public void onAction(GuiScreen screen) {
-                SupportMods.xaeroMinimap.teleportToWaypoint(screen, element);
-            }
-
-            public boolean isActive() {
-                return SupportMods.xaeroMinimap.canTeleport(SupportMods.xaeroMinimap.getWaypointWorld());
-            }
-        }).setNameFormatArgs("T"));
-        rightClickOptions.add(new RightClickOption("gui.xaero_right_click_waypoint_share", rightClickOptions.size(), target) {
-            public void onAction(GuiScreen screen) {
-                SupportMods.xaeroMinimap.shareWaypoint(element, (GuiMap)screen, SupportMods.xaeroMinimap.getWaypointWorld());
-            }
-        });
-
-        if (!isServerWaypoint) {
+                public boolean isActive() {
+                    return SupportMods.xaeroMinimap.canTeleport(SupportMods.xaeroMinimap.getWaypointWorld());
+                }
+            }).setNameFormatArgs("T"));
+            rightClickOptions.add(new RightClickOption("gui.xaero_right_click_waypoint_share", rightClickOptions.size(), target) {
+                public void onAction(GuiScreen screen) {
+                    SupportMods.xaeroMinimap.shareWaypoint(element, (GuiMap) screen, SupportMods.xaeroMinimap.getWaypointWorld());
+                }
+            });
             rightClickOptions.add((new RightClickOption("", rightClickOptions.size(), target) {
                 public String getName() {
                     return element.isTemporary() ? "gui.xaero_right_click_waypoint_restore" : (element.isDisabled() ? "gui.xaero_right_click_waypoint_enable" : "gui.xaero_right_click_waypoint_disable");

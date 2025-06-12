@@ -1,14 +1,14 @@
 package com.zhaoch23.xaerosminimapserver.network.message;
 
+import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
 import io.netty.buffer.ByteBuf;
 import org.bukkit.entity.Player;
-import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
 
 public class WaypointRequestHandler implements IClientMessageHandler {
 
     @Override
     public void handle(Player player, ByteBuf buf) {
-       XaerosMinimapServer.getWaypointManager().sendWaypointsToPlayer(player);
+        XaerosMinimapServer.getWaypointManager().sendWaypointsToPlayer(player);
     }
 
     @Override

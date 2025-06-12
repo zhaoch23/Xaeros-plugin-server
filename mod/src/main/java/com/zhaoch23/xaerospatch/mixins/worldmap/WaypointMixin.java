@@ -46,5 +46,4 @@ abstract public class WaypointMixin {
     }
 
 
-
 }

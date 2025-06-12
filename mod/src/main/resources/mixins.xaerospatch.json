@@ -6,6 +6,7 @@
   "client": [
     "minimap.gui.GuiClearSetMixin",
     "minimap.gui.GuiWaypointsMixin",
+    "worldmap.gui.GuiRightClickMenuMixin"
   ],
   "mixins": [
     "minimap.MinimapWorldStateUpdaterMixin",

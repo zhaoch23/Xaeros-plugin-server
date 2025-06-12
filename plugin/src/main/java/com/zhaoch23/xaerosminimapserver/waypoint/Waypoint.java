@@ -4,6 +4,7 @@ import java.util.Set;
 
 public class Waypoint {
     public final int x, y, z;
+
     public final String name, initials;
     public final WaypointColor color;
     public final boolean transparent;
@@ -11,13 +12,13 @@ public class Waypoint {
     public final String description;
 
     public Waypoint(
-        int x, int y, int z, 
-        String name, 
-        String initials,
-        WaypointColor color, 
-        boolean transparent, 
-        Set<String> permissions, 
-        String description
+            int x, int y, int z,
+            String name,
+            String initials,
+            WaypointColor color,
+            boolean transparent,
+            Set<String> permissions,
+            String description
     ) {
         this.x = x;
         this.y = y;

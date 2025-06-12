@@ -22,10 +22,9 @@ public abstract class WaypointMixin {
     @Unique
     private final WaypointServerConfig xaerospatch$serverConfig = WaypointServerConfig.createLocal();
     @Unique
-    private boolean xaerospatch$backgroundTransparent = false;
-
-    @Unique
     String xaerospatch$description;
+    @Unique
+    private boolean xaerospatch$backgroundTransparent = false;
 
     @Unique
     public WaypointServerConfig xaerospatch$getServerConfig() {
@@ -57,6 +56,5 @@ public abstract class WaypointMixin {
     public void xaerospatch$setDescription(String description) {
         this.xaerospatch$description = description;
     }
-
 
 }

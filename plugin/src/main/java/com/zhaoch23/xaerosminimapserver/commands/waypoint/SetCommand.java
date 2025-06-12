@@ -4,7 +4,6 @@ import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
 import com.zhaoch23.xaerosminimapserver.commands.CommandUtils;
 import com.zhaoch23.xaerosminimapserver.commands.SubCommand;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

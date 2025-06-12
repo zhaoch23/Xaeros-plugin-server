@@ -100,7 +100,7 @@ public abstract class WaypointRendererMixin extends ElementRenderer<Waypoint, Wa
         if (w.getType() == 1) {
             XaeroIcon symbolIcon = getSymbolCreator().getDeathSymbolTexture(renderInfo.scaledResolution);
             GlStateManager.pushMatrix();
-            GlStateManager.translate(-1.0F - (float) 27 / 2.0F, (float) (62 + (renderBackground ? -43 + 3 - 1 : -12)), 0.0F);
+            GlStateManager.translate(-1.0F - (float) 27 / 2.0F, (float) (62 + (renderBackground ? -41 : -12)), 0.0F);
             GlStateManager.scale(1.0F, -1.0F, 1.0F);
             GlStateManager.bindTexture(symbolIcon.getTextureAtlas().getTextureId());
             GlStateManager.color(visibilityAlpha, visibilityAlpha, visibilityAlpha, visibilityAlpha);
