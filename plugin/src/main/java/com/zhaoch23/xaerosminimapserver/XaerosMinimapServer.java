@@ -3,6 +3,7 @@ package com.zhaoch23.xaerosminimapserver;
 import com.zhaoch23.xaerosminimapserver.commands.waypoint.WaypointCommand;
 import com.zhaoch23.xaerosminimapserver.network.NetworkHandler;
 import com.zhaoch23.xaerosminimapserver.waypoint.WaypointManager;
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -10,6 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class XaerosMinimapServer extends JavaPlugin implements Listener {
@@ -49,8 +51,17 @@ public final class XaerosMinimapServer extends JavaPlugin implements Listener {
         setting.loadConfig(getConfig());
         setting.sendConfigToPlayers();
 
-        waypointManager.loadConfig(getConfig());
+        waypointManager.loadConfig();
         waypointManager.sendWaypointsToPlayers();
+    }
+
+    public String formatWithPlaceholders(Player player, String message) {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            return PlaceholderAPI.setPlaceholders(player, message);
+        }
+        // Fallback if PlaceholderAPI is not available
+        return message.replace("%player%", player.getName())
+                .replace("%world%", player.getWorld().getName());
     }
 
     @EventHandler
@@ -69,9 +80,13 @@ public final class XaerosMinimapServer extends JavaPlugin implements Listener {
         waypointManager.sendWaypointsToPlayer(player);
     }
 
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        waypointManager.emptyPlayerWaypoints(event.getPlayer());
+    }
 
     public void save() {
-        waypointManager.toConfig(getConfig());
+        waypointManager.toConfig();
         saveConfig();
     }
 

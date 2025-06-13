@@ -2,6 +2,7 @@ package com.zhaoch23.xaerospatch.message;
 
 import com.zhaoch23.xaerospatch.XaerosPatch;
 import com.zhaoch23.xaerospatch.common.IWaypoint;
+import com.zhaoch23.xaerospatch.common.WaypointOption;
 import com.zhaoch23.xaerospatch.common.WaypointServerConfig;
 import com.zhaoch23.xaerospatch.common.WaypointUtils;
 import io.netty.buffer.ByteBuf;
@@ -30,14 +31,17 @@ public class WaypointUpdatePacket extends MinimapMessage<WaypointUpdatePacket> {
         worldName = NetworkUtils.readString(buf);
         int count = buf.readInt();
         for (int i = 0; i < count; i++) {
+            String id = NetworkUtils.readString(buf);
             int x = buf.readInt();
             int y = buf.readInt();
             int z = buf.readInt();
+            boolean transparent = buf.readBoolean();
+            WaypointColor color = WaypointColor.values()[buf.readInt()];
             String name = NetworkUtils.readString(buf);
             String initials = NetworkUtils.readString(buf);
-            WaypointColor color = WaypointColor.values()[buf.readInt()];
-            boolean transparent = buf.readBoolean();
+            String hoverText = NetworkUtils.readString(buf);
             String description = NetworkUtils.readString(buf);
+            List<WaypointOption> options = NetworkUtils.readOptions(buf);
             Waypoint waypoint = new Waypoint(x, y, z, name, initials, color);
 
             // TODO: Make this configurable
@@ -45,8 +49,12 @@ public class WaypointUpdatePacket extends MinimapMessage<WaypointUpdatePacket> {
             serverConfig.serverWaypoint = true;
             serverConfig.canShare = true;
             serverConfig.canDisable = false;
-            ((IWaypoint) waypoint).setBackgroundTransparent(transparent);
-            ((IWaypoint) waypoint).setDescription(description);
+            IWaypoint serverWaypoint = (IWaypoint) waypoint;
+            serverWaypoint.setId(id);
+            serverWaypoint.setBackgroundTransparent(transparent);
+            serverWaypoint.setDescription(description);
+            serverWaypoint.setHoverText(hoverText);
+            serverWaypoint.setOptions(options);
 
             this.waypoints.add(waypoint);
         }

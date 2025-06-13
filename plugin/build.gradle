@@ -23,6 +23,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
 
     compileOnly("net.luckperms:api:5.5")
+    compileOnly(fileTree("libs"))
 }
 
 def targetJavaVersion = 8

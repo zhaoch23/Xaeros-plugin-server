@@ -12,6 +12,8 @@ public class Setting {
             true
     );
 
+    private String adminPermission = "xaerosminimapwaypoint.admin";
+
     public ClientboundRulePacket getClientboundRulePacket() {
         return clientboundRulePacket;
     }
@@ -21,6 +23,12 @@ public class Setting {
         clientboundRulePacket.allowCaveModeOnServer = rules.getBoolean("allowCaveModeOnServer");
         clientboundRulePacket.allowNetherCaveModeOnServer = rules.getBoolean("allowNetherCaveModeOnServer");
         clientboundRulePacket.allowRadarOnServer = rules.getBoolean("allowRadarOnServer");
+
+        adminPermission = config.getString("admin.admin-permission", adminPermission);
+    }
+
+    public String getAdminPermission() {
+        return adminPermission;
     }
 
     public void sendConfigToPlayers() {

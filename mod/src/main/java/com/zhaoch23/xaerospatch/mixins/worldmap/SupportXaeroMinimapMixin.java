@@ -29,8 +29,13 @@ abstract public class SupportXaeroMinimapMixin {
 
         IWaypoint iconverted = (IWaypoint) converted;
         IWaypoint iorigin = (IWaypoint) w;
-        iconverted.setBackgroundTransparent(iorigin.isBackgroundTransparent());
+
+
+        iconverted.setId(iorigin.getId());
         iconverted.setDescription(iorigin.getDescription());
+        iconverted.setHoverText(iorigin.getHoverText());
+        iconverted.setBackgroundTransparent(iorigin.isBackgroundTransparent());
+        iconverted.setOptions(iorigin.getOptions());
         iorigin.getServerConfig().copyTo(iconverted.getServerConfig());
     }
 

@@ -1,6 +1,7 @@
 package com.zhaoch23.xaerospatch.mixins.minimap.message;
 
 import com.zhaoch23.xaerospatch.XaerosPatch;
+import com.zhaoch23.xaerospatch.message.OptionSelectedPacket;
 import com.zhaoch23.xaerospatch.message.WaypointRequestPacket;
 import com.zhaoch23.xaerospatch.message.WaypointUpdatePacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,6 +26,7 @@ public abstract class MinimapMessageRegisterMixin {
         XaerosPatch.getLogger().debug("Registering new packets with MinimapMessageHandler");
         messageHandler.register(5, WaypointUpdatePacket.class, null, new WaypointUpdatePacket.ClientHandler());
         messageHandler.register(6, WaypointRequestPacket.class, new WaypointRequestPacket.ServerHandler(), null);
+        messageHandler.register(7, OptionSelectedPacket.class, new OptionSelectedPacket.ServerHandler(), null);
     }
 
 }

@@ -19,7 +19,6 @@ public class WaypointRequestPacket extends MinimapMessage<WaypointRequestPacket>
 
     @Override
     public void fromBytes(ByteBuf buf) {
-
     }
 
     @Override

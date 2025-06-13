@@ -3,7 +3,9 @@ package com.zhaoch23.xaerosminimapserver.network;
 import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
 import com.zhaoch23.xaerosminimapserver.network.message.IClientMessageHandler;
 import com.zhaoch23.xaerosminimapserver.network.message.IServerMessagePacket;
+import com.zhaoch23.xaerosminimapserver.network.message.OptionSelectedHandler;
 import com.zhaoch23.xaerosminimapserver.network.message.WaypointRequestHandler;
+import com.zhaoch23.xaerosminimapserver.waypoint.option.WaypointOption;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.bukkit.Bukkit;
@@ -12,6 +14,7 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class NetworkHandler implements PluginMessageListener {
@@ -30,6 +33,7 @@ public class NetworkHandler implements PluginMessageListener {
 
         // Register all the handlers
         registerHandler(new WaypointRequestHandler());
+        registerHandler(new OptionSelectedHandler());
     }
 
     public static String readString(ByteBuf buf) {
@@ -43,6 +47,14 @@ public class NetworkHandler implements PluginMessageListener {
         byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
         buf.writeInt(bytes.length);
         buf.writeBytes(bytes);
+    }
+
+    public static void writeOptions(ByteBuf buf, List<WaypointOption> options) {
+        buf.writeInt(options.size());
+        for (WaypointOption option : options) {
+            writeString(buf, option.initials);
+            writeString(buf, option.text);
+        }
     }
 
     public void registerHandler(IClientMessageHandler msg) {

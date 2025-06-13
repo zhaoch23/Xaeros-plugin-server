@@ -1,0 +1,28 @@
+waypoints:
+  id_test:
+    name: "Test"
+    x: 0
+    y: 100
+    z: 0
+    color: RED
+    initials: "TE"
+    transparent: true
+    hover-text: "Test hover text"
+    description: |
+      This is a test waypoint.
+      It has a description.
+      It has a hover text.
+      It has a color.
+      It has a transparent.
+      It has a permissions.
+      It has a options.
+    options:
+      - "teleport"
+      - "message"
+    permissions:
+      - "mypermission_group.node" # Managed by LuckPerms
+
+
+
+
+

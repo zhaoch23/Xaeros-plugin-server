@@ -1,6 +1,7 @@
 package com.zhaoch23.xaerospatch.mixins.minimap;
 
 import com.zhaoch23.xaerospatch.common.IWaypoint;
+import com.zhaoch23.xaerospatch.common.WaypointOption;
 import com.zhaoch23.xaerospatch.common.WaypointServerConfig;
 import org.spongepowered.asm.mixin.Implements;
 import org.spongepowered.asm.mixin.Interface;
@@ -9,6 +10,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.List;
 
 @Mixin(value = xaero.common.minimap.waypoints.Waypoint.class, remap = false)
 @Implements(
@@ -22,7 +25,13 @@ public abstract class WaypointMixin {
     @Unique
     private final WaypointServerConfig xaerospatch$serverConfig = WaypointServerConfig.createLocal();
     @Unique
+    String xaerospatch$id;
+    @Unique
     String xaerospatch$description;
+    @Unique
+    String xaerospatch$hoverText;
+    @Unique
+    List<WaypointOption> xaerospatch$options;
     @Unique
     private boolean xaerospatch$backgroundTransparent = false;
 
@@ -38,6 +47,14 @@ public abstract class WaypointMixin {
     )
     public void isServerWaypoint(CallbackInfoReturnable<Boolean> cir) {
         cir.setReturnValue(this.xaerospatch$serverConfig.serverWaypoint);
+    }
+
+    public String xaerospatch$getId() {
+        return xaerospatch$id;
+    }
+
+    public void xaerospatch$setId(String id) {
+        this.xaerospatch$id = id;
     }
 
     // TODO: Add this to add waypoint GUI
@@ -57,4 +74,19 @@ public abstract class WaypointMixin {
         this.xaerospatch$description = description;
     }
 
+    public String xaerospatch$getHoverText() {
+        return xaerospatch$hoverText;
+    }
+
+    public void xaerospatch$setHoverText(String hoverText) {
+        this.xaerospatch$hoverText = hoverText;
+    }
+
+    public List<WaypointOption> xaerospatch$getOptions() {
+        return xaerospatch$options;
+    }
+
+    public void xaerospatch$setOptions(List<WaypointOption> options) {
+        this.xaerospatch$options = options;
+    }
 }

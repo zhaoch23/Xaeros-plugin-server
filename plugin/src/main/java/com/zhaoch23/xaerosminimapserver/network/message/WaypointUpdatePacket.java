@@ -5,20 +5,23 @@ import com.zhaoch23.xaerosminimapserver.waypoint.Waypoint;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
-import java.util.List;
+import java.util.Map;
 
 public class WaypointUpdatePacket implements IServerMessagePacket {
 
-    private final List<Waypoint> waypoints;
+    private final Map<String, Waypoint> waypoints;
 
     private final String worldName;
 
 
-    public WaypointUpdatePacket(List<Waypoint> waypoints, String worldName) {
+    public WaypointUpdatePacket(Map<String, Waypoint> waypoints, String worldName) {
         this.waypoints = waypoints;
         this.worldName = worldName;
     }
 
+    public Map<String, Waypoint> getWaypoints() {
+        return waypoints;
+    }
 
     @Override
     public byte getDiscriminator() {
@@ -28,15 +31,19 @@ public class WaypointUpdatePacket implements IServerMessagePacket {
     public void toBytes(ByteBuf buf) {
         NetworkHandler.writeString(buf, worldName);
         buf.writeInt(waypoints.size());
-        for (Waypoint waypoint : waypoints) {
+        for (Map.Entry<String, Waypoint> entry : waypoints.entrySet()) {
+            Waypoint waypoint = entry.getValue();
+            NetworkHandler.writeString(buf, entry.getKey());
             buf.writeInt(waypoint.x);
             buf.writeInt(waypoint.y);
             buf.writeInt(waypoint.z);
+            buf.writeBoolean(waypoint.transparent);
+            buf.writeInt(waypoint.color.ordinal());
             NetworkHandler.writeString(buf, waypoint.name);
             NetworkHandler.writeString(buf, waypoint.initials);
-            buf.writeInt(waypoint.color.ordinal());
-            buf.writeBoolean(waypoint.transparent);
+            NetworkHandler.writeString(buf, waypoint.hoverText);
             NetworkHandler.writeString(buf, waypoint.description);
+            NetworkHandler.writeOptions(buf, waypoint.options);
         }
     }
 

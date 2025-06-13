@@ -1,0 +1,14 @@
+
+teleport:
+  initials: "TP"
+  text: "Teleport"
+  dispatch-mode: "player" # palyer, server, op
+  onSelect:
+    - "tp {{player}} {{x}} {{y}} {{z}}"
+
+message:
+  initials: "MSG"
+  text: "Message"
+  dispatch-mode: "server" # player, server, op
+  onSelect:
+    - "say {{player}} Hello!"

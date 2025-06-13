@@ -54,36 +54,23 @@ public class SetCommand implements SubCommand {
         boolean transparent = args.length > 9 && Boolean.parseBoolean(args[9]);
         boolean refresh = args.length <= 10 || Boolean.parseBoolean(args[10]);
 
-        if (initials != null) {
-            XaerosMinimapServer.getWaypointManager().addWaypoint(
-                    id,
-                    name,
-                    initials,
-                    worldName,
-                    (int) x,
-                    (int) y,
-                    (int) z,
-                    color,
-                    transparent,
-                    new HashSet<>(),
-                    "",
-                    refresh
-            );
-        } else {
-            XaerosMinimapServer.getWaypointManager().addWaypoint(
-                    id,
-                    name,
-                    worldName,
-                    (int) x,
-                    (int) y,
-                    (int) z,
-                    color,
-                    transparent,
-                    new HashSet<>(),
-                    "",
-                    refresh
-            );
+        if (initials == null) {
+            initials = name.length() >= 2 ? name.substring(0, 2).toUpperCase() : name;
         }
+        XaerosMinimapServer.getWaypointManager().addWaypoint(
+                id,
+                name,
+                initials,
+                name,
+                worldName,
+                (int) x, (int) y, (int) z,
+                color,
+                transparent,
+                new HashSet<>(),
+                "",
+                new ArrayList<>(),
+                refresh
+        );
 
         sender.sendMessage(ChatColor.GREEN + "Waypoint '" + id + "' has been set at " +
                 String.format("%.1f, %.1f, %.1f", x, y, z) + "!");

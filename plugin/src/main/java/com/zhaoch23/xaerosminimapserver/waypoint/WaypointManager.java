@@ -1,8 +1,9 @@
 package com.zhaoch23.xaerosminimapserver.waypoint;
 
 import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
-import com.zhaoch23.xaerosminimapserver.network.NetworkHandler;
 import com.zhaoch23.xaerosminimapserver.network.message.WaypointUpdatePacket;
+import com.zhaoch23.xaerosminimapserver.waypoint.option.OptionManager;
+import com.zhaoch23.xaerosminimapserver.waypoint.option.WaypointOption;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.CachedPermissionData;
 import net.luckperms.api.model.user.User;
@@ -11,9 +12,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,13 +26,16 @@ import java.util.stream.Collectors;
 public class WaypointManager {
 
     public static final String PERMISSION_NODE_PREFIX = "xaerosminimapwaypoint.";
-    private static String adminPermission = "xaerosminimapwaypoint.admin";
     public final Map<String, Map<String, Waypoint>> waypoints = new ConcurrentHashMap<>();
+    public final OptionManager optionManager;
+
+    private final Map<UUID, Map<String, Waypoint>> playerWaypoints = new ConcurrentHashMap<>();
     private final XaerosMinimapServer plugin;
     private final LuckPerms luckPerms;
 
     public WaypointManager(XaerosMinimapServer plugin) {
         this.plugin = plugin;
+        optionManager = new OptionManager(plugin);
         RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
         if (provider != null) {
             luckPerms = provider.getProvider();
@@ -67,6 +74,7 @@ public class WaypointManager {
             String id,
             String name,
             String initials,
+            String hoverText,
             String worldName,
             int x,
             int y,
@@ -75,6 +83,7 @@ public class WaypointManager {
             boolean transparent,
             Set<String> permissions,
             String description,
+            List<WaypointOption> options,
             boolean refresh
     ) {
         WaypointColor waypointColor = WaypointColor.fromName(color);
@@ -84,36 +93,16 @@ public class WaypointManager {
                 z,
                 name,
                 initials,
+                hoverText,
                 waypointColor,
                 transparent,
                 permissions,
-                description
+                description,
+                options
         );
         waypoint.permissions.add(getPermissionNode(worldName, id));
-        waypoint.permissions.add(adminPermission);
+        waypoint.permissions.add(XaerosMinimapServer.getSetting().getAdminPermission());
         addWaypoint(worldName, id, waypoint, refresh);
-    }
-
-    public void addWaypoint(
-            String id,
-            String name,
-            String worldName,
-            int x,
-            int y,
-            int z,
-            String color,
-            boolean transparent,
-            Set<String> permissions,
-            String description,
-            boolean refresh
-    ) {
-        String initials = "";
-        if (name.length() < 2) {
-            initials = name.toUpperCase();
-        } else {
-            initials = name.substring(0, 2).toUpperCase();
-        }
-        addWaypoint(id, name, initials, worldName, x, y, z, color, transparent, permissions, description, refresh);
     }
 
     public boolean hasWaypoint(World world, String id) {
@@ -147,18 +136,19 @@ public class WaypointManager {
         }
     }
 
+    private void sendWaypointSetsToPlayer(Player player, WaypointUpdatePacket packet) {
+        playerWaypoints.put(player.getUniqueId(), packet.getWaypoints());
+        XaerosMinimapServer.getNetworkHandler().sendToPlayer(player, packet);
+    }
+
     public void sendWaypointSetsToPlayers(List<String> worldNames, List<Player> players) {
-        List<Waypoint> waypoints = new ArrayList<>();
+        Map<String, Waypoint> waypointMap = new HashMap<>();
         for (String worldName : worldNames) {
-            waypoints.addAll(getWaypoints(worldName).values());
+            waypointMap.putAll(getWaypoints(worldName));
         }
-        StringBuilder worldNamesString = new StringBuilder();
-        for (String worldName : worldNames) {
-            worldNamesString.append(worldName).append(",");
-        }
-        WaypointUpdatePacket packet = new WaypointUpdatePacket(waypoints, worldNamesString.toString());
+        WaypointUpdatePacket packet = new WaypointUpdatePacket(waypointMap, String.join(",", worldNames));
         for (Player player : players) {
-            XaerosMinimapServer.getNetworkHandler().sendToPlayer(player, packet);
+            sendWaypointSetsToPlayer(player, packet);
         }
     }
 
@@ -176,43 +166,39 @@ public class WaypointManager {
     }
 
     public void sendWaypointsToPlayers(World world) {
-        NetworkHandler handler = XaerosMinimapServer.getNetworkHandler();
         Map<String, Waypoint> waypointList = getWaypoints(world.getName());
         if (waypointList.isEmpty()) return; // No waypoints to send
 
         for (Player player : world.getPlayers()) {
             User user = luckPerms.getUserManager().getUser(player.getUniqueId());
             if (user == null) continue;
-            List<Waypoint> visibleWaypoints = waypointList.entrySet()
+            Map<String, Waypoint> visibleWaypoints = waypointList.entrySet()
                     .stream()
                     .filter(entry -> canSeeWaypoint(user, world, entry.getKey()))
-                    .map(Map.Entry::getValue)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
             WaypointUpdatePacket packet = new WaypointUpdatePacket(
                     visibleWaypoints,
                     world.getName()
             );
-            handler.sendToPlayer(player, packet);
+            sendWaypointSetsToPlayer(player, packet);
         }
     }
 
     public void sendWaypointsToPlayer(Player player) {
-        NetworkHandler handler = XaerosMinimapServer.getNetworkHandler();
         World world = player.getWorld();
         if (world == null) return;
         User user = luckPerms.getUserManager().getUser(player.getUniqueId());
         if (user == null) return;
-        List<Waypoint> waypointList = getWaypoints(world.getName())
+        Map<String, Waypoint> waypointList = getWaypoints(world.getName())
                 .entrySet()
                 .stream()
                 .filter(entry -> canSeeWaypoint(user, world, entry.getKey()))
-                .map(Map.Entry::getValue)
-                .collect(Collectors.toList());
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         WaypointUpdatePacket packet = new WaypointUpdatePacket(
                 waypointList,
                 world.getName()
         );
-        handler.sendToPlayer(player, packet);
+        sendWaypointSetsToPlayer(player, packet);
     }
 
     public void grantWaypoint(Player player, World world, String id) {
@@ -292,60 +278,109 @@ public class WaypointManager {
         return canSeeWaypoint(user, worldName, id);
     }
 
-    public void loadConfig(FileConfiguration config) {
-        clearAll(false);
+    public void onWaypointOptionSelected(Player player, String waypointId, int optionIndex) {
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            Map<String, Waypoint> waypoints = playerWaypoints.get(player.getUniqueId());
+            if (waypoints == null) return;
+            Waypoint waypoint = waypoints.get(waypointId);
+            if (waypoint == null) return;
+            waypoint.options.get(optionIndex).onSelect(player, waypoint);
+        });
+    }
 
-        adminPermission = config.getString("admin.admin-permission", adminPermission);
+    public void emptyPlayerWaypoints(Player player) {
+        playerWaypoints.remove(player.getUniqueId());
+    }
 
+    public void loadWaypoints(String worldName, FileConfiguration config) {
         ConfigurationSection waypoints = config.getConfigurationSection("waypoints");
-        if (waypoints == null) {
-            plugin.getLogger().severe("Waypoints section not found in config");
-            return;
-        }
-        for (String worldName : waypoints.getKeys(false)) {
-            ConfigurationSection waypoint = waypoints.getConfigurationSection(worldName);
-            for (String id : waypoint.getKeys(false)) {
-                try {
-                    ConfigurationSection waypointData = waypoint.getConfigurationSection(id);
-                    if (waypointData == null) {
-                        plugin.getLogger().severe("Waypoint " + id + " not found");
-                        continue;
-                    }
-                    String initials = waypointData.getString("initials");
-                    boolean transparent = waypointData.getBoolean("transparent", false);
-
-                    int x = waypointData.getInt("x");
-                    int y = waypointData.getInt("y");
-                    int z = waypointData.getInt("z");
-                    String name = waypointData.getString("name", id);
-                    String description = waypointData.getString("description", "");
-                    Set<String> permissions = new HashSet<>(waypointData.getStringList("permissions"));
-
-                    if (initials == null)
-                        addWaypoint(id, name, worldName, x, y, z, waypointData.getString("color"), transparent, permissions, description, false);
-                    else
-                        addWaypoint(id, name, initials, worldName, x, y, z, waypointData.getString("color"), transparent, permissions, description, false);
-                } catch (Exception e) {
-                    plugin.getLogger().severe("Failed to load " + id + " due to " + e);
+        for (String id : waypoints.getKeys(false)) {
+            try {
+                ConfigurationSection waypointData = waypoints.getConfigurationSection(id);
+                if (waypointData == null) {
+                    plugin.getLogger().severe("Waypoint " + id + " not found");
+                    continue;
                 }
+
+                boolean transparent = waypointData.getBoolean("transparent", false);
+
+                String name = waypointData.getString("name", id);
+                String initials = waypointData.getString("initials",
+                        name.length() >= 2 ? name.substring(0, 2).toUpperCase() : name);
+                Set<String> permissions = new HashSet<>(waypointData.getStringList("permissions"));
+
+                List<WaypointOption> options = new ArrayList<>();
+                for (String optionId : waypointData.getStringList("options")) {
+                    WaypointOption option = optionManager.getOption(optionId);
+                    if (option != null) {
+                        options.add(option);
+                    }
+                }
+
+                addWaypoint(
+                        id, name, initials,
+                        waypointData.getString("hover-text", ""),
+                        worldName,
+                        waypointData.getInt("x"), waypointData.getInt("y"), waypointData.getInt("z"),
+                        waypointData.getString("color", "RED"), transparent,
+                        permissions,
+                        waypointData.getString("description", ""),
+                        options,
+                        false);
+            } catch (Exception e) {
+                plugin.getLogger().severe("Failed to load " + id + " due to " + e);
             }
+
         }
         plugin.getLogger().info(prettyPrint());
     }
 
-    public void toConfig(FileConfiguration config) {
-        config.set("admin.admin-permission", adminPermission);
+    public void loadConfig() {
+        optionManager.loadOptions();
 
-        config.set("waypoints", null); // Clear existing waypoints section
+        clearAll(false);
 
-        ConfigurationSection configSection = config.createSection("waypoints");
-        for (Map.Entry<String, Map<String, Waypoint>> entry : waypoints.entrySet()) {
-            String worldName = entry.getKey();
-            Map<String, Waypoint> worldWaypoints = entry.getValue();
-            ConfigurationSection worldSection = configSection.createSection(worldName);
-            for (Map.Entry<String, Waypoint> waypoint : worldWaypoints.entrySet()) {
-                Waypoint waypointData = waypoint.getValue();
-                ConfigurationSection waypointSection = worldSection.createSection(waypoint.getKey());
+        File file = new File(plugin.getDataFolder(), "waypoints/");
+        if (!file.exists()) {
+            file.mkdirs();
+            plugin.saveResource("waypoints/world.yml", false);
+        }
+
+        File[] files = file.listFiles();
+        if (files == null) {
+            return;
+        }
+
+        for (File f : files) {
+            if (f.isFile()) {
+                String worldName = f.getName();
+                if (worldName.endsWith(".yml")) {
+                    try {
+                        worldName = worldName.substring(0, worldName.length() - 4);
+                        FileConfiguration config = YamlConfiguration.loadConfiguration(f);
+                        loadWaypoints(worldName, config);
+                    } catch (Exception e) {
+                        plugin.getLogger().severe("Failed to load " + worldName + " due to " + e);
+                    }
+                }
+            }
+        }
+
+    }
+
+    public void saveWaypoints(String worldName) {
+        File configFile = new File(plugin.getDataFolder(), "waypoints/" + worldName + ".yml");
+        try {
+            if (!configFile.exists()) {
+                configFile.createNewFile();
+            }
+            FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
+            config.set("waypoints", null); // Clear existing waypoints section
+            ConfigurationSection configSection = config.createSection("waypoints");
+            Map<String, Waypoint> worldWaypoints = getWaypoints(worldName);
+            for (Map.Entry<String, Waypoint> w : worldWaypoints.entrySet()) {
+                Waypoint waypointData = w.getValue();
+                ConfigurationSection waypointSection = configSection.createSection(w.getKey());
                 waypointSection.set("x", waypointData.x);
                 waypointSection.set("y", waypointData.y);
                 waypointSection.set("z", waypointData.z);
@@ -353,9 +388,22 @@ public class WaypointManager {
                 waypointSection.set("color", waypointData.color.getName());
                 waypointSection.set("initials", waypointData.initials);
                 waypointSection.set("transparent", waypointData.transparent);
-                waypointSection.set("permissions", waypointData.permissions);
+                waypointSection.set("permissions", new ArrayList<>(waypointData.permissions));
                 waypointSection.set("description", waypointData.description);
+                waypointSection.set("hover-text", waypointData.hoverText);
+                waypointSection.set("options", waypointData.options.stream().map(option -> option.initials).collect(Collectors.toList()));
             }
+
+            config.save(configFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            plugin.getLogger().severe("Failed to create waypoints file for " + worldName + " due to " + e);
+        }
+    }
+
+    public void toConfig() {
+        for (Map.Entry<String, Map<String, Waypoint>> entry : waypoints.entrySet()) {
+            saveWaypoints(entry.getKey());
         }
     }
 
@@ -385,7 +433,6 @@ public class WaypointManager {
                             waypointData.x, waypointData.y, waypointData.z));
                     sb.append(String.format("    Color: %s\n", waypointData.color));
                     sb.append(String.format("    Transparent: %s\n", waypointData.transparent));
-                    sb.append(String.format("    Permissions: %s\n", waypointData.permissions));
                 }
             }
         }

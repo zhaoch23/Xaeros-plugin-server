@@ -121,7 +121,7 @@ public abstract class GuiRightClickMenuMixin extends DropDownWidget {
                     Minecraft.getMinecraft().fontRenderer,
                     shortenText(line, true),
                     x + 1 + width / 2,
-                    y + 2 + i * SLOT_HEIGHT,
+                    y + 1 + i * SLOT_HEIGHT,
                     0x00FFFFFF
             );
         }
@@ -144,6 +144,11 @@ public abstract class GuiRightClickMenuMixin extends DropDownWidget {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean onDropDown(int mouseX, int mouseY, int scaledHeight) {
+        return hoveredSlot >= 0 && hoveredSlot < actionOptions.size() && !this.removed;
     }
 
     @Override

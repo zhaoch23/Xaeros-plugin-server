@@ -15,27 +15,32 @@ public abstract class BaseCommand implements TabExecutor {
         this.subCommands = new ArrayList<>();
     }
 
+    public void sendUsage(CommandSender sender) {
+        StringBuilder usage = new StringBuilder();
+        usage.append("&cUsage: &f").append(this.getName()).append(" <subcommand> [args]\n");
+        for (SubCommand subCommand : this.subCommands) {
+            usage.append("&c").append(subCommand.getName()).append(": &f").append(subCommand.getUsage()).append("\n");
+        }
+        sender.sendMessage(usage.toString());
+    }
+
     @Override
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command cmd, String label, String[] args) {
         if (this.getPermissionNode() != null && !sender.hasPermission(this.getPermissionNode())) {
             sender.sendMessage("&cYou don't have permission to do this!");
             return true;
         }
-        if (args.length == 0 || args[0].equals("help")) {
-            StringBuilder usage = new StringBuilder();
-            usage.append("&cUsage: &f").append(this.getName()).append(" <subcommand> [args]\n");
-            for (SubCommand subCommand : this.subCommands) {
-                usage.append("&c").append(subCommand.getName()).append(": &f").append(subCommand.getUsage()).append("\n");
-            }
-            sender.sendMessage(usage.toString());
-            return false;
+        if (args.length == 0) {
+            this.sendUsage(sender);
+            return true;
         }
         for (SubCommand subCommand : this.subCommands) {
             if (subCommand.getName().equalsIgnoreCase(args[0])) {
                 return subCommand.onCommand(sender, args);
             }
         }
-        return false;
+        this.sendUsage(sender);
+        return true;
     }
 
     @Override
