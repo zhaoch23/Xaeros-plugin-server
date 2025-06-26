@@ -67,7 +67,7 @@ public final class XaerosMinimapServer extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         getLogger().info("Sending rules to " + event.getPlayer().getName());
-        setting.sendConfigToPlayers();
+        setting.sendConfigToPlayer(event.getPlayer());
     }
 
     @EventHandler
@@ -92,7 +92,7 @@ public final class XaerosMinimapServer extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        save();
+//        save();
         networkHandler.unload();
 
     }

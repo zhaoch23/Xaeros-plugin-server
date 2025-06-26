@@ -3,6 +3,7 @@ package com.zhaoch23.xaerosminimapserver;
 import com.zhaoch23.xaerosminimapserver.network.message.ClientboundRulePacket;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 public class Setting {
 
@@ -35,5 +36,11 @@ public class Setting {
         XaerosMinimapServer
                 .getNetworkHandler()
                 .sendToAllPlayers(clientboundRulePacket);
+    }
+
+    public void sendConfigToPlayer(Player player) {
+        XaerosMinimapServer
+                .getNetworkHandler()
+                .sendToPlayer(player, clientboundRulePacket);
     }
 }
