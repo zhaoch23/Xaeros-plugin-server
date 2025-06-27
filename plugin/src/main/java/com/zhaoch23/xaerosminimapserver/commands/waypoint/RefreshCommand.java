@@ -25,7 +25,7 @@ public class RefreshCommand implements SubCommand {
                     sender.sendMessage(ChatColor.RED + "Player not found!");
                     return true;
                 }
-                XaerosMinimapServer.getWaypointManager().sendWaypointsToPlayer(player);
+                XaerosMinimapServer.getWaypointManager().refreshWaypoints(player);
             } else if (args[1].equals("world")) {
                 World world = XaerosMinimapServer.plugin.getServer().getWorld(args[2]);
                 if (world == null) {

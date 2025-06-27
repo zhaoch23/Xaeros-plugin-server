@@ -1,6 +1,8 @@
 package com.zhaoch23.xaerosminimapserver.waypoint;
 
+import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
 import com.zhaoch23.xaerosminimapserver.waypoint.option.WaypointOption;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Set;
@@ -50,6 +52,19 @@ public class Waypoint {
         if (!(obj instanceof Waypoint)) return false;
         Waypoint other = (Waypoint) obj;
         return name.equals(other.name);
+    }
+
+    public String formatString(String str, Player player) {
+        if (player != null) {
+            str = str.replace("{{player}}", player.getName());
+        }
+        str = str.replace("{{x}}", String.valueOf(x))
+                .replace("{{y}}", String.valueOf(y))
+                .replace("{{z}}", String.valueOf(z))
+                .replace("{{name}}", name);
+        str = XaerosMinimapServer.plugin.formatWithPlaceholders(player, str);
+
+        return str;
     }
 
     public String toString() {

@@ -1,6 +1,5 @@
 package com.zhaoch23.xaerosminimapserver.waypoint.option;
 
-import com.zhaoch23.xaerosminimapserver.XaerosMinimapServer;
 import com.zhaoch23.xaerosminimapserver.waypoint.Waypoint;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -19,19 +18,10 @@ public class CommandOption extends WaypointOption {
         this.onSelect = onSelect;
     }
 
-    public static String formatCommand(String command, Player player, Waypoint waypoint) {
-        command = command.replace("{{player}}", player.getName());
-        command = command.replace("{{x}}", String.valueOf(waypoint.x));
-        command = command.replace("{{y}}", String.valueOf(waypoint.y));
-        command = command.replace("{{z}}", String.valueOf(waypoint.z));
-        command = XaerosMinimapServer.plugin.formatWithPlaceholders(player, command);
-        return command;
-    }
-
     @Override
     public void onSelect(Player player, Waypoint waypoint) {
         for (String command : onSelect) {
-            String formattedCommand = formatCommand(command, player, waypoint);
+            String formattedCommand = waypoint.formatString(command, player);
             switch (dispatchMode) {
                 case PLAYER:
                     player.performCommand(formattedCommand);

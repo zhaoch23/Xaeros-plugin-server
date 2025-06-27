@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import xaero.map.gui.dropdown.DropDownWidget;
 import xaero.map.gui.dropdown.IDropDownContainer;
@@ -14,6 +15,7 @@ import xaero.map.gui.dropdown.rightclick.RightClickOption;
 import java.util.ArrayList;
 import java.util.List;
 
+@Pseudo
 @Mixin(
         value = xaero.map.gui.dropdown.rightclick.GuiRightClickMenu.class,
         remap = false

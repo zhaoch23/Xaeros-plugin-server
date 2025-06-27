@@ -201,6 +201,11 @@ public class WaypointManager {
         sendWaypointSetsToPlayer(player, packet);
     }
 
+    public void sendWaypointsToPlayer(Player player, Map<String, Waypoint> waypointMap) {
+        WaypointUpdatePacket packet = new WaypointUpdatePacket(waypointMap, player.getWorld().getName());
+        sendWaypointSetsToPlayer(player, packet);
+    }
+
     public void grantWaypoint(Player player, World world, String id) {
         assert player != null && world != null && id != null;
         grantWaypoint(player, world.getName(), id);
@@ -276,6 +281,27 @@ public class WaypointManager {
     public boolean canSeeWaypoint(Player player, String worldName, String id) {
         User user = luckPerms.getUserManager().loadUser(player.getUniqueId()).join();
         return canSeeWaypoint(user, worldName, id);
+    }
+
+    public boolean canSeeWaypoint(Player player, Waypoint waypoint) {
+        User user = luckPerms.getUserManager().loadUser(player.getUniqueId()).join();
+        CachedPermissionData permissionData = user.getCachedData().getPermissionData();
+        for (String permission : waypoint.permissions) {
+            if (permissionData.checkPermission(permission).asBoolean()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void refreshWaypoints(Player player) {
+        Map<String, Waypoint> pw = playerWaypoints.get(player.getUniqueId());
+        if (pw == null) return;
+        Map<String, Waypoint> newWaypoints = pw.entrySet().stream()
+                .filter(entry -> canSeeWaypoint(player, entry.getValue()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        if (newWaypoints.isEmpty()) return;
+        sendWaypointsToPlayer(player, newWaypoints);
     }
 
     public void onWaypointOptionSelected(Player player, String waypointId, int optionIndex) {
