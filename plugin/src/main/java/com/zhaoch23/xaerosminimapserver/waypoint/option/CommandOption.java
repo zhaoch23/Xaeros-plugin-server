@@ -11,9 +11,8 @@ public class CommandOption extends WaypointOption {
     public DispatchMode dispatchMode;
     public List<String> onSelect;
 
-    public CommandOption(String initials, String text, String dispatchMode, List<String> onSelect) {
-        this.initials = initials;
-        this.text = text;
+    public CommandOption(String id, String initials, String text, String dispatchMode, List<String> onSelect) {
+        super(id, initials, text);
         this.dispatchMode = DispatchMode.fromName(dispatchMode);
         this.onSelect = onSelect;
     }

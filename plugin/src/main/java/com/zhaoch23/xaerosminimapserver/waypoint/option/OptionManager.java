@@ -34,7 +34,7 @@ public class OptionManager {
                 String text = optionData.getString("text");
                 String dispatchMode = optionData.getString("dispatch-mode");
                 List<String> onSelect = optionData.getStringList("onSelect");
-                options.put(id, new CommandOption(initials, text, dispatchMode, onSelect));
+                options.put(id, new CommandOption(id, initials, text, dispatchMode, onSelect));
             } catch (Exception e) {
                 plugin.getLogger().severe("Failed to load " + id + " due to " + e);
             }
@@ -47,6 +47,7 @@ public class OptionManager {
         File file = new File(plugin.getDataFolder(), "options/");
         if (!file.exists()) {
             file.mkdirs();
+            // Save a default option file
             plugin.saveResource("options/test.yml", false);
         }
 
@@ -56,11 +57,8 @@ public class OptionManager {
         }
 
         for (File f : files) {
-            if (f.isFile()) {
-                if (f.getName().endsWith(".yml")) {
-                    FileConfiguration config = YamlConfiguration.loadConfiguration(f);
-                    loadOptions(config);
-                }
+            if (f.isFile() && f.getName().endsWith(".yml")) {
+                loadOptions(YamlConfiguration.loadConfiguration(f));
             }
         }
     }

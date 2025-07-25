@@ -395,15 +395,18 @@ public class WaypointManager {
     }
 
     public void saveWaypoints(String worldName) {
-        File configFile = new File(plugin.getDataFolder(), "waypoints/" + worldName + ".yml");
         try {
-            if (!configFile.exists()) {
-                configFile.createNewFile();
+            File configFile = new File(plugin.getDataFolder(), "waypoints/" + worldName + ".yml");
+            Map<String, Waypoint> worldWaypoints = getWaypoints(worldName);
+            if (worldWaypoints.isEmpty()) {
+                if (configFile.exists()) { // Remove empty world files
+                    configFile.delete();
+                }
+                return;
             }
             FileConfiguration config = YamlConfiguration.loadConfiguration(configFile);
             config.set("waypoints", null); // Clear existing waypoints section
             ConfigurationSection configSection = config.createSection("waypoints");
-            Map<String, Waypoint> worldWaypoints = getWaypoints(worldName);
             for (Map.Entry<String, Waypoint> w : worldWaypoints.entrySet()) {
                 Waypoint waypointData = w.getValue();
                 ConfigurationSection waypointSection = configSection.createSection(w.getKey());
@@ -417,7 +420,7 @@ public class WaypointManager {
                 waypointSection.set("permissions", new ArrayList<>(waypointData.permissions));
                 waypointSection.set("description", waypointData.description);
                 waypointSection.set("hover-text", waypointData.hoverText);
-                waypointSection.set("options", waypointData.options.stream().map(option -> option.initials).collect(Collectors.toList()));
+                waypointSection.set("options", waypointData.options.stream().map(option -> option.id).collect(Collectors.toList()));
             }
 
             config.save(configFile);
